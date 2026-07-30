@@ -25,7 +25,7 @@ fsd-project/
 │   ├── package.json
 │   └── vite.config.ts
 ├── .env                       # Environment Variables (Ignored by Git)
-└── docker-compose.yml         # Docker Compose Configuration
+└── docker-compose.yml         # ** Update Docker Compose Configuration **
 ```
 ## Prerequisites
 Before you begin, ensure you have the following installed on your machine:
@@ -52,8 +52,20 @@ MYSQL_DATABASE=a_database_name
 MYSQL_USER=a_database_user
 MYSQL_PASSWORD=your_user_password
 ```
+### 2. Configure Docker Compose
+Open the `docker-compose.yml` file in the root directory. It currently starts empty:
+```YAML
+version: '3.8'
 
-### 2. Launch the Application Stack
+services:
+  # TODO: Define your services here (db, api, frontend)
+
+volumes:
+  # TODO: Define your named volumes here
+```
+To complete the setup, update your `docker-compose.yml` with the service requirements.
+
+### 3. Launch the Application Stack
 Build the Docker images and start the services in the foreground to monitor their initialisation logs:
 
 ```bash
