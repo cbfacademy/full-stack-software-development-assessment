@@ -1,0 +1,1 @@
+INSERT INTO greetings (message) VALUES ('Hello World from Spring Boot Seed!');
