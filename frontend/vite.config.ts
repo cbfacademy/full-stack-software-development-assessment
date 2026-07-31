@@ -7,8 +7,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      // Docker Compose sets this to http://api:8080 so the same proxy works
+      // in a container as it does on your machine
       '/api': {
-        target: 'http://localhost:8080',
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
     },

@@ -1,0 +1,19 @@
+# Docker Compose configuration for the full stack.
+#
+# This file is intentionally empty: writing it is part of the assessment.
+# See the "Part 2: Containerise the stack" section of README.md for the full
+# list of requirements. Uncomment the keys below and fill them in.
+#
+# services:
+#   db:
+#     # TODO: MySQL 8, credentials from .env, healthcheck, named volume
+#   api:
+#     # TODO: build ./api, wait for db to be healthy, SPRING_DATASOURCE_* env vars
+#   frontend:
+#     # TODO: build ./frontend, VITE_API_PROXY_TARGET pointing at the api service
+#
+# volumes:
+#   # TODO: the named volume that persists the MySQL data
+#
+# networks:
+#   # TODO: the isolated network the services communicate over

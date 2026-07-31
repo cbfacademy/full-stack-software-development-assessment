@@ -1,5 +1,5 @@
 # --- Stage 1: Build stage ---
-FROM eclipse-temurin:25-jdk-alpine AS build
+FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
 
 # Copy maven executable and pom.xml first to leverage Docker cache
@@ -16,7 +16,7 @@ COPY src src
 RUN ./mvnw package -DskipTests
 
 # --- Stage 2: Runtime stage ---
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Create a non-root user for security

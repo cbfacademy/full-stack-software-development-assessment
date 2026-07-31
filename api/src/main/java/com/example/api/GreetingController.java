@@ -1,9 +1,11 @@
 package com.example.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/greeting")
 public class GreetingController {
 
     // Spring injects the repository here automatically
@@ -13,7 +15,7 @@ public class GreetingController {
         this.greetingRepository = greetingRepository;
     }
 
-    @GetMapping("/greeting")
+    @GetMapping
     public Greeting getGreeting() {
         // Find all records in the database, grab the first one, or return a fallback
         return greetingRepository.findAll().stream()
