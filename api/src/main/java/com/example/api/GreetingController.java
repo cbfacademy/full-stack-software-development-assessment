@@ -2,7 +2,6 @@ package com.example.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 @RestController
 public class GreetingController {
@@ -21,7 +20,8 @@ public class GreetingController {
                 .findFirst()
                 .orElseGet(() -> {
                     // Fallback in case the database table is completely empty
-                    Greeting defaultGreeting = new Greeting("Database connection is working, but no entries were found!");
+                    Greeting defaultGreeting = new Greeting(
+                            "Database connection is working, but no entries were found!");
                     return greetingRepository.save(defaultGreeting);
                 });
     }
