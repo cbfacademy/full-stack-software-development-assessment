@@ -1,19 +1,14 @@
 # --- Stage 1: Build stage ---
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy maven executable and pom.xml first to leverage Docker cache
-COPY mvnw .
-COPY .mvn .mvn
+# Copy pom.xml first to leverage Docker cache
 COPY pom.xml .
-
-# Grant execution permissions and download dependencies
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # Copy source code and build the application
 COPY src src
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # --- Stage 2: Runtime stage ---
 FROM eclipse-temurin:21-jre-alpine
