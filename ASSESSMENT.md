@@ -133,7 +133,7 @@ Take your engineering skill set to the next level by extending your infrastructu
 
 Write a multi-stage `Dockerfile` for your React application that builds production-ready static assets and serves them using an optimised server image like Nginx.
 
-The starter's `frontend/Dockerfile` deliberately runs the Vite **development** server, which is not suitable for production. Replacing it is this goal. Note that once you serve static assets from Nginx, the Vite dev proxy no longer runs, so you will need to proxy `/api` in your Nginx configuration instead.
+The `frontend/Dockerfile` you wrote for Part 2 runs the Vite **development** server, which is not suitable for production. Replacing it is this goal. Note that once you serve static assets from Nginx, the Vite dev proxy no longer runs, so you will need to proxy `/api` in your Nginx configuration instead.
 
 ### Goal B: Kubernetes Orchestration
 

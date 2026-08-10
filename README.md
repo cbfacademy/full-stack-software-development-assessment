@@ -2,7 +2,7 @@
 
 A minimal but complete starter repo for the Full Stack Software Development assessment. It contains a React (Vite / TypeScript) frontend calling a Spring Boot REST API, which reads from a MySQL database. It exists to give you a known-good foundation to build your own application on.
 
-To get started, you can run the application directly on your own machine. The API and frontend have basic Dockerfiles included, but containerising the stack is part of the assessment, so `docker-compose.yml` is intentionally left empty for you to configure.
+To get started, you can run the application directly on your own machine. Containerising the stack is part of the assessment, so writing a Dockerfile for the API, another for the frontend, and the Compose file that runs them together is your task.
 
 **The assessment brief lives in [ASSESSMENT.md](ASSESSMENT.md).** Read it before you start building.
 
@@ -20,16 +20,13 @@ fsd-project/
 │   │           ├── schema.sql              # Database schema (DDL)
 │   │           └── data.sql                # Seed data (DML)
 │   ├── local.properties.example    # Template for your local DB credentials
-│   ├── Dockerfile
 │   └── pom.xml
 ├── frontend/                       # React (Vite / TypeScript) frontend
 │   ├── src/
-│   ├── Dockerfile
 │   ├── package.json
 │   └── vite.config.ts
 ├── .env.example                    # Template for Docker Compose variables
-├── ASSESSMENT.md                   # The assessment brief
-└── docker-compose.yml              # ** Empty: you write this **
+└── ASSESSMENT.md                   # The assessment brief
 ```
 
 ---
@@ -173,13 +170,32 @@ MYSQL_PASSWORD=your_user_password
 
 `.env` is read by Docker Compose only. It has no effect on the local run in Part 1, which reads `api/local.properties` instead.
 
-### 2. Write `docker-compose.yml`
+### 2. Write the Dockerfiles
 
-The file in the project root is empty. Your configuration must orchestrate three services:
+Neither application ships with a Dockerfile, so you must add your own.
+
+#### `api/Dockerfile`
+
+- Use a multi-stage build.
+- The API targets Java 21, so pick base images to match.
+- `pom.xml` sets no `<finalName>` by default, so the jar is named after the artifact and version (`api-0.0.1-SNAPSHOT.jar`). You should either copy it with a wildcard to keep the Dockerfile working when the version changes, or set the `<finalName>` value explicitly.
+- Run the application as a non-root user rather than as `root`.
+- The app listens on port 8080.
+
+#### `frontend/Dockerfile`
+
+- Ensure the project's dependencies are installed exclusively from the lock file.
+- Use a start command that binds to all interfaces.
+- The app listens on port 5173.
+- Get the Vite dev server working before attempting the Nginx build for Stretch Goal A in [ASSESSMENT.md](ASSESSMENT.md).
+
+### 3. Write `docker-compose.yml`
+
+Add a Composer file in the project root. Your configuration must orchestrate three services:
 
 **`db`**
 
-- Uses the `mysql:8.0` image
+- Uses a versioned `mysql` image
 - Takes its credentials from the four variables in `.env`
 - Persists its data in a named volume, so records survive a restart
 - Declares a healthcheck so other services can wait for it to be ready
@@ -188,22 +204,23 @@ The file in the project root is empty. Your configuration must orchestrate three
 
 **`api`**
 
-- Builds from `./api`
-- Waits for `db` to report healthy before starting, using `depends_on` with `condition: service_healthy`
-- Receives `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD` as environment variables, derived from your `.env` values. The host in the URL is the `db` service name, not `localhost`
+- Builds from `./api`.
+- Waits for `db` to report healthy before starting.
+- Receives `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD` as environment variables, derived from your `.env` values. 
+- Sets the correct host name in the service name.
 - Exposes port `8080`
 
 **`frontend`**
 
-- Builds from `./frontend`
-- Receives `VITE_API_PROXY_TARGET=http://api:8080` so the Vite proxy targets the API container instead of `localhost`
-- Exposes port `5173`
+- Builds from `./frontend`.
+- Sets the correct host name for `VITE_API_PROXY_TARGET` so the Vite proxy targets the API container.
+- Exposes port `5173`.
 
 You also need a **named volume** for the MySQL data and a **named network** that all three services join, so they can reach each other by service name in isolation from other containers.
 
-Nothing in the application code needs to change. The `SPRING_DATASOURCE_*` environment variables automatically override the values in `api/local.properties`, because Spring Boot ranks environment variables above configuration files.
+Nothing in the application code needs to change. The `SPRING_DATASOURCE_*` environment variables automatically override the values in `api/local.properties`, because [Spring Boot grants environment variables higher precedence than configuration files](https://docs.spring.io/spring-boot/reference/features/external-config.html).
 
-### 3. Launch the stack
+### 4. Launch the stack
 
 ```bash
 docker compose up --build
